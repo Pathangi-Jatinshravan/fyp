@@ -7,13 +7,17 @@ void print_packet(char *msg, struct sk_buff *skb) {
 	char *it, *user_data, *tail;
 	char data[104];
 	unsigned int counter = 0;
+	
+	tcph = tcp_hdr(skb);
+	eth = (struct ethhdr *) skb_mac_header(skb);
+	ip_header = (struct iphdr *) skb_network_header(skb);
 
 	user_data = (unsigned char *)((unsigned char *)tcph + (tcph->doff * 4));
 	tail = skb_tail_pointer(skb);
 	
 	printk("print_packet from %s, data:\n", msg);
 	printk("\n\n");
-
+	/*
 	if (*(char *)user_data == '1' && *(char *)((user_data + 1)) == '6'){
 		for (it=user_data; it!=tail; it++) {
 			char c = *(char *) it;		
@@ -25,4 +29,5 @@ void print_packet(char *msg, struct sk_buff *skb) {
 	}
 	
 	printk("print_packet : %s", data);
+	*/
 }
