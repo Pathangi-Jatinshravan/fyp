@@ -17,7 +17,7 @@ void print_packet(char *msg, struct sk_buff *skb) {
 	
 	printk("print_packet from %s, data:\n", msg);
 	printk("\n\n");
-	/*
+	
 	if (*(char *)user_data == '1' && *(char *)((user_data + 1)) == '6'){
 		for (it=user_data; it!=tail; it++) {
 			char c = *(char *) it;		
@@ -29,5 +29,5 @@ void print_packet(char *msg, struct sk_buff *skb) {
 	}
 	
 	printk("print_packet : %s", data);
-	*/
+
 }
