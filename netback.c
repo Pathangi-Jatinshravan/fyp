@@ -249,8 +249,6 @@ static struct xenvif_rx_meta *get_next_rx_buffer(struct xenvif_queue *queue,
 	struct xenvif_rx_meta *meta;
 	struct xen_netif_rx_request *req;
 
-	printk("RAMAN : ____  get_next_rx_buffer  ____\n");
-
 	req = RING_GET_REQUEST(&queue->rx, queue->rx.req_cons++);
 
 	meta = npo->meta + npo->meta_prod++;
@@ -514,9 +512,6 @@ static void xenvif_rx_action(struct xenvif_queue *queue)
 	};
 
 	skb_queue_head_init(&rxq);
-
-	printk("RAMAN: ___ xenvif_rx_action  ___\n");
-
 
 	while (xenvif_rx_ring_slots_available(queue, XEN_NETBK_RX_SLOTS_MAX)
 	       && (skb = xenvif_rx_dequeue(queue)) != NULL) {
@@ -828,9 +823,6 @@ static struct gnttab_map_grant_ref *xenvif_get_requests(struct xenvif_queue *que
 	unsigned int nr_slots;
 
 	nr_slots = shinfo->nr_frags;
-
-
-	printk("RAMAN : _____ xenvif_get_requests  ____\n");
 
 	/* Skip first skb fragment if it is on same page as header fragment. */
 	start = (frag_get_pending_idx(&shinfo->frags[0]) == pending_idx);
