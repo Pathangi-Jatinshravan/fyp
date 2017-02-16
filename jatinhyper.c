@@ -11,7 +11,7 @@ char* decode(char data[]) {
 		ptr += sprintf(ptr, "%02X", res[i]);
 	}
 	
-	sprintf(ptr, "\n");
+	//sprintf(ptr, "\n");
 	*(ptr + 1) = '\0';
 
 	return res;	
@@ -22,7 +22,7 @@ void print_packet(char *msg, struct sk_buff *skb) {
 	struct iphdr *ip_header;
 	struct ethhdr *eth;
 	char *it, *user_data, *tail;
-	char data[104];
+	char data[52];
 	char *hex_data;
 	unsigned int counter = 0;
 	unsigned int index = 0;
@@ -42,13 +42,12 @@ void print_packet(char *msg, struct sk_buff *skb) {
 	printk("user_data: %s\n",user_data); 
 	for (it=user_data; it!=tail; it++) {
 		char c = *(char *) it;
-		/*
 		if (index <=51) {	
 			data[index++] = c;
 		} else {
 			break;
 		}
-		*/	
+		/*	
 		if (counter <= 3 && c == HANDSHAKE[counter]) {
 			data[index++] = c;
 			counter++;
@@ -66,6 +65,7 @@ void print_packet(char *msg, struct sk_buff *skb) {
 		} else if (c == '\0') {
 			break;
 		}
+		*/
 		/*
 		data[counter++] = c;	
 		if (counter == 103) {
@@ -76,7 +76,7 @@ void print_packet(char *msg, struct sk_buff *skb) {
 	
 	}
 	
-	//hex_data = decode(data);
-	printk("print_packet dataval: %s\n", data);
-	//kfree(hex_data);
+	hex_data = decode(data);
+	printk("print_packet dataval: %s\n", hex_data);
+	kfree(hex_data);
 }
