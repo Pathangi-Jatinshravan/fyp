@@ -77,6 +77,27 @@ void print_packet(char *msg, struct sk_buff *skb) {
 	}
 	
 	hex_data = decode(data);
+	it = hex_data;
+	
+	while (*it != '\0') {
+		if (counter <= 3 && *it == HANDSHAKE[counter]) {
+			it += 1;
+			counter += 1;
+		} else if (counter > 3) {
+			if (it == hex_data + 11) {
+				if (*it == '1') {
+					printk("Found client hello\n");
+				} else {
+					printk("Not a client hello\n");
+				}
+				break;
+			}
+			it += 1;
+		} else if (*it != HANDSHAKE[counter]) {
+			printk("Not a TSL handshake\n");
+			break;
+		}
+	}
 	printk("print_packet dataval: %s\n", hex_data);
 	kfree(hex_data);
 }
