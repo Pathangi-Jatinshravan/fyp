@@ -16,19 +16,46 @@ char* decode(char data[]) {
 
 	return res;	
 }
+/*
+bool hello_check(unsigned char *data, unsigned char *tail) {
+	unsigned char HANDSHAKE[] = {1, 6, 0, 3};
+	int i, j = 0;
+	unsigned char *ptr = data;
+	
+	if (data == NULL) {
+		return false;	
+	}
 
+	while (ptr != tail) {
+		printk("%x ", *ptr); 		
+		if (j == 3) {
+			return true;
+		}
+
+		if (*ptr == HANDSHAKE[j]) {		
+			j++;		
+		} else {
+			j = 0;
+		}
+		
+		ptr++;
+		
+	}
+	return false;	
+} 
+*/
 void print_packet(char *msg, struct sk_buff *skb) {
 	struct tcphdr *tcph;
 	struct iphdr *ip_header;
 	struct ethhdr *eth;
 	char *it, *user_data, *tail;
-	char data[104];
-	char *hex_data;
+	char hex_data[10];
 	unsigned int counter = 0;
 	unsigned int index = 0;
+	int j=0;
 	
-	char HANDSHAKE[] = {'1', '6', '0', '3'};
-	bool handshake = true;
+	const char *HANDSHAKE[2];
+	HANDSHAKE[0] = "16"; HANDSHAKE[1] = "03";
 
 	tcph = tcp_hdr(skb);
 	eth = (struct ethhdr *) skb_mac_header(skb);
@@ -37,46 +64,38 @@ void print_packet(char *msg, struct sk_buff *skb) {
 	user_data = (unsigned char *)((unsigned char *)tcph + (tcph->doff * 4));
 	tail = skb_tail_pointer(skb);
 		
-	printk("print_packet from %s, data:\n", msg);
+	//printk("print_packet from %s, data:\n", msg);
 	printk("\n\n");
-	printk("user_data: %s\n",user_data); 
+	//printk("user_data: %s\n",user_data); 
+	
+	if (user_data == NULL || tail <= user_data || tail == NULL) {
+		return;
+	}
+	printk("user_data: ");
 	for (it=user_data; it!=tail; it++) {
 		char c = *(char *) it;
-		/*
-		if (index <=51) {	
-			data[index++] = c;
-		} else {
+		sprintf(hex_data, "%02X", c);
+
+		if (c == '\0') {
 			break;
-		}
-		*/	
-		if (counter <= 3 && c == HANDSHAKE[counter]) {
-			data[index++] = c;
-			counter++;
- 		} else if (counter > 3) {
-			data[index++] = c;
-			if (index == 11) {
-				if (data[index] != 1) {
-					printk("print_packet: Not a client hello\n");
-					break;
-				} else {
-					printk("print_packet: Found client hello\n");
-					break;
-				}
-			}
-		} else if (c == '\0') {
+		} 
+				
+		if (counter <= 1 && !strcmp(hex_data, HANDSHAKE[counter])) {		
+			counter++;		
+		} else if (counter <=1 && strcmp(hex_data, HANDSHAKE[counter])){
+			printk("print_packet: Not a handshake message\n");
 			break;
+		} else if (counter >1) {
+			printk("print_packet: Handshake found %s.", hex_data);
+			break;		
 		}
-		/*
-		data[counter++] = c;	
-		if (counter == 103) {
-			printk("print_packet: Reached 103\n");
-			break;
-		}
-		*/
+		
+		printk("%02X ", c);
 	
 	}
+
 	
 	//hex_data = decode(data);
-	printk("print_packet dataval: %s\n", data);
+	printk("\n\n");
 	//kfree(hex_data);
 }
