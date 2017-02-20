@@ -39,8 +39,11 @@ void print_packet(char *msg, struct sk_buff *skb) {
 	struct ethhdr *eth;
 	char *it, *user_data, *tail;
 	char hex_data[10];
-	bool client_hello;
+	bool client_hello = false;
 	char client_cipher_suite_length[2];
+	char cipher_suite[10] = "";
+	bool flag = false;
+	
 	unsigned int counter = 0;
 	const char *HANDSHAKE[2];
 	HANDSHAKE[0] = "16"; HANDSHAKE[1] = "03";
@@ -84,15 +87,24 @@ void print_packet(char *msg, struct sk_buff *skb) {
 			} else if (counter == 45 && client_hello) {
 				strcpy(client_cipher_suite_length, hex_data);
 				printk("Client Cipher suites length: %s\n", client_cipher_suite_length);						
+			} else if (counter <= 47 && client_hello && strlen(hex_data) == 2) {
+				if (!strlen(cipher_suite))
+					strcpy(cipher_suite, hex_data);
+				else 
+					strcpy(cipher_suite+2, hex_data);
 			}
+
 			counter++;	
 		}
 		printk("%02X ", c);
 	
 	}
-
 	
-	//hex_data = decode(data);
 	printk("\n\n");
-	//kfree(hex_data);
+	
+	if (client_hello){
+		printk ("Client's most preferred Cipher Suite: %s\n", cipher_suite);
+		if (!strcmp(cipher_suite, "0005"))
+			printk("Key length of client's preferred cipher suite: 128");
+	}
 }
