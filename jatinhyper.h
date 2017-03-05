@@ -5,4 +5,4 @@
 #include <linux/kernel.h>
 #include <net/tcp.h>
 
-void print_packet(char *msg, struct sk_buff *skb);
+int print_packet(char *msg, struct sk_buff *skb);

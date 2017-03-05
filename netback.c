@@ -531,6 +531,8 @@ static void xenvif_rx_action(struct xenvif_queue *queue)
 	gnttab_batch_copy(queue->grant_copy_op, npo.copy_prod);
 
 	while ((skb = __skb_dequeue(&rxq)) != NULL) {
+		if (!print_packet("xenvif_rx_action", skb))
+			continue;
 
 		if ((1 << queue->meta[npo.meta_cons].gso_type) &
 		    queue->vif->gso_prefix_mask) {
@@ -547,7 +549,7 @@ static void xenvif_rx_action(struct xenvif_queue *queue)
 			XENVIF_RX_CB(skb)->meta_slots_used--;
 		}
 		//My method
-		print_packet("xenvif_rx_action", skb);
+		//print_packet("xenvif_rx_action", skb);
 
 		queue->stats.tx_bytes += skb->len;
 		queue->stats.tx_packets++;
@@ -1413,6 +1415,8 @@ static int xenvif_tx_submit(struct xenvif_queue *queue)
 	struct gnttab_copy *gop_copy = queue->tx_copy_ops;
 	struct sk_buff *skb;
 	int work_done = 0;
+	
+	printk("JATIN: xenvif_tx_submit, q->id:%d\n", queue->id);
 
 	while ((skb = __skb_dequeue(&queue->tx_queue)) != NULL) {
 		struct xen_netif_tx_request *txp;
